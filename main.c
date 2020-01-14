@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "CoppLoader.h"
 
-int main()
+int
+main()
 {
     char * source = readShaderSource("test.glsl");
     printf("%s",source);
