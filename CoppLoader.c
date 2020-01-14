@@ -15,7 +15,7 @@ readShaderSource(char* shaderPath)
 
     fp = fopen(shaderPath, "r");
     if (fp == NULL) {
-        printf("fuck");
+        printf("Failed to open file: %s\n", shaderPath);
     }
     fseek (fp, 0, SEEK_END);
     length = ftell (fp);
@@ -27,7 +27,6 @@ readShaderSource(char* shaderPath)
     fread (buffer, 1, length, fp);
     fclose (fp);
 
-    //printf("File contents:\n%s", buffer);
     buffer[length] = '\0';
     return buffer;
 }
@@ -35,17 +34,11 @@ readShaderSource(char* shaderPath)
 GLuint
 compileShader(GLenum type, char *sourcePath)
 {
-
     GLuint s = glCreateShader(type);
     char *source = readShaderSource(sourcePath);
-    printf("%s\n",source);
-    printf("nc1\n");
     glShaderSource(s, 1, (GLchar**)&source, NULL);
-    printf("nc2\n");
     glCompileShader(s);
-    printf("nc3\n");
     GLint status;
-    printf("Compiler status: %d\n", status);
     glGetShaderiv(s, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
         char errlog[256];
@@ -66,6 +59,14 @@ InitShader(char* vShaderPath, char* fShaderPath)
     glAttachShader(sp, vShader);
     glAttachShader(sp, fShader);
     glLinkProgram(sp);
+
+    GLint linked;
+    glGetProgramiv(sp, GL_LINK_STATUS, &linked);
+    if (!linked) {
+        char errlog[256];
+        glGetProgramInfoLog(sp, 512, NULL, errlog);
+        printf("Shader program failed to link:\n%s", errlog);
+    }
 
     return sp;
 }
