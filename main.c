@@ -20,7 +20,8 @@ void init();
 void display();
 
 
-void init()
+void
+init()
 {
 
     point2 points[NumPoints];
