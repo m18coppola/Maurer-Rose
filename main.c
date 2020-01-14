@@ -94,7 +94,7 @@ main(int argc, char* argv[])
     glutInitContextVersion(3, 2);
     glutInitContextProfile(GLUT_CORE_PROFILE);
 
-    glutCreateWindow("example");
+    glutCreateWindow("OpenGL Example");
 
     glewInit();
     init();
