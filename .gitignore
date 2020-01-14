@@ -3,3 +3,5 @@ obj/
 MCopenGL.layout
 MCopenGL.depend
 MCopenGL.cbp
+*.o
+*.bin
