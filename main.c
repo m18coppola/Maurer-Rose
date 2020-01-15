@@ -33,8 +33,8 @@ init()
 
     point2 points[361];
 
-    int n = 7;
-    int d = 29;
+    int n = 6;
+    int d = 71;
 
     for(int i = 0; i < 361; i++){
 
