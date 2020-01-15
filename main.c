@@ -15,6 +15,15 @@ typedef struct {
     GLfloat y;
 } point2;
 
+typedef struct {
+    GLfloat r;
+    GLfloat g;
+    GLfloat b;
+} color;
+
+color red  = {1.0, 0.0, 0.0};
+color blue = {0.0, 0.0, 1.0};
+
 const float DegreesToRadians = M_PI / 180.0;
 
 void init();
@@ -24,14 +33,10 @@ void display();
 void
 init()
 {
-
-    point2 verticies[3] = {
-        {.x = -1.0, .y = -1.0},
-        {.x =  0.0, .y =  1.0},
-        {.x =  1.0, .y = -1.0}
-    };
-
-    point2 points[361];
+    point2 rose[361];
+    point2 path[361];
+    color roseColor[361];
+    color pathColor[361];
 
     int n = 6;
     int d = 71;
@@ -42,8 +47,22 @@ init()
         GLfloat r = sin(n*k*DegreesToRadians);
         GLfloat x = r * cos(k * DegreesToRadians);
         GLfloat y = r * sin(k * DegreesToRadians);
-        points[i].x = x;
-        points[i].y = y;
+        rose[i].x = x;
+        rose[i].y = y;
+
+        roseColor[i] = red;
+    }
+
+    for(int i = 0; i < 361; i++){
+
+        GLfloat k = i;
+        GLfloat r = sin(n*k*DegreesToRadians);
+        GLfloat x = r * cos(k * DegreesToRadians);
+        GLfloat y = r * sin(k * DegreesToRadians);
+        path[i].x = x;
+        path[i].y = y;
+
+        pathColor[i] = blue;
     }
 
 
@@ -51,7 +70,7 @@ init()
     GLuint program = InitShader("shader.glsl","fshader.glsl");
     glUseProgram(program);
 
-    glLineWidth(1.0);
+
 
 
     GLuint vao;
@@ -61,12 +80,22 @@ init()
     GLuint buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rose) + sizeof(path) + sizeof(roseColor) + sizeof(pathColor), NULL, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(rose), rose);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(rose), sizeof(path), path);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(rose) + sizeof(path), sizeof(roseColor) , roseColor);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(rose) + sizeof(path) + sizeof(roseColor), sizeof(pathColor), pathColor);
 
 
     GLuint loc = glGetAttribLocation(program, "vPosition");
     glEnableVertexAttribArray(loc);
     glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+    GLuint loc2 = glGetAttribLocation(program, "vColor");
+    glEnableVertexAttribArray(loc2);
+    glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(rose)+sizeof(path)));
+
+
     glClearColor(1.0, 1.0, 1.0, 1.0);
 
 
@@ -76,7 +105,10 @@ void
 display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
+    glLineWidth(1.0);
     glDrawArrays(GL_LINE_LOOP, 0, 361);
+    glLineWidth(2.0);
+    glDrawArrays(GL_LINE_LOOP, 361, 361);
     glFlush();
 }
 
