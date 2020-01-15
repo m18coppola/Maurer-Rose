@@ -6,15 +6,16 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 #include <GL/freeglut.h>
+#include <math.h>
 
 #define BUFFER_OFFSET(bytes) ((GLvoid*) (bytes))
-
-const int NumPoints = 50000;
 
 typedef struct {
     GLfloat x;
     GLfloat y;
 } point2;
+
+const float DegreesToRadians = M_PI / 180.0;
 
 void init();
 void display();
@@ -24,39 +25,33 @@ void
 init()
 {
 
-    point2 points[NumPoints];
-
-    //A triangle
-
     point2 verticies[3] = {
         {.x = -1.0, .y = -1.0},
         {.x =  0.0, .y =  1.0},
         {.x =  1.0, .y = -1.0}
     };
 
-    //arbitrary point in triangle
-    points[0].x = 0.25;
-    points[0].y = 0.50;
-    //compute and store NumPoints-1 new points
-    for(int k = 1; k < NumPoints; k++)
-    {
-        int j = rand() % 3; //pick a vertex at random
+    point2 points[361];
 
-        //compute the point halfway between selected vertex and previous point
-        GLfloat prev_x = points[k-1].x;
-        GLfloat prev_y = points[k-1].y;
-        GLfloat vert_x = verticies[j].x;
-        GLfloat vert_y = verticies[j].y;
+    int n = 7;
+    int d = 29;
 
-        GLfloat new_x = (prev_x + vert_x)/2.0;
-        GLfloat new_y = (prev_y + vert_y)/2.0;
+    for(int i = 0; i < 361; i++){
 
-        points[k].x = new_x;
-        points[k].y = new_y;
+        GLfloat k = i * d;
+        GLfloat r = sin(n*k*DegreesToRadians);
+        GLfloat x = r * cos(k * DegreesToRadians);
+        GLfloat y = r * sin(k * DegreesToRadians);
+        points[i].x = x;
+        points[i].y = y;
     }
+
+
 
     GLuint program = InitShader("shader.glsl","fshader.glsl");
     glUseProgram(program);
+
+    glLineWidth(1.0);
 
 
     GLuint vao;
@@ -81,7 +76,7 @@ void
 display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_POINTS, 0, NumPoints);
+    glDrawArrays(GL_LINE_LOOP, 0, 361);
     glFlush();
 }
 

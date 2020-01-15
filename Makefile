@@ -1,7 +1,7 @@
 # -*-Makefile-*-
 
 CC=gcc
-FLAGS= -lGLEW -lglut -lGL
+FLAGS= -lGLEW -lglut -lGL -lm
 
 all: main
 
